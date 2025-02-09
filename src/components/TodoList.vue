@@ -7,8 +7,13 @@
       <!-- Left Column: Add Task Form -->
       <div class="w-2/5">
         <div class="bg-white p-4 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Add New Task</h2>
           <form @submit.prevent="addTask" class="flex flex-col space-y-2">
+            <label for="task-title" class="font-bold text-sm text-left"
+              >Task Title</label
+            >
             <input
+              id="task-title"
               v-model="newTaskTitle"
               placeholder="Add a new task title"
               class="p-2 border rounded"
@@ -17,7 +22,12 @@
             <span v-if="titleError" class="text-red-500 text-sm">{{
               titleError
             }}</span>
+
+            <label for="task-description" class="font-bold text-sm text-left"
+              >Task Description</label
+            >
             <input
+              id="task-description"
               v-model="newTaskDescription"
               placeholder="Add a new task description"
               class="p-2 border rounded"
@@ -26,11 +36,24 @@
             <span v-if="descriptionError" class="text-red-500 text-sm">{{
               descriptionError
             }}</span>
-            <select v-model="newTaskStatus" class="p-2 border rounded">
+
+            <label for="task-status" class="font-bold text-sm text-left"
+              >Task Status</label
+            >
+            <select
+              id="task-status"
+              v-model="newTaskStatus"
+              class="p-2 border rounded"
+            >
               <option value="Pending">Pending</option>
               <option value="In Progress">In Progress</option>
             </select>
+
+            <label for="task-date" class="font-bold text-sm text-left"
+              >Target Date</label
+            >
             <input
+              id="task-date"
               v-model="newTaskTargetDate"
               type="date"
               class="p-2 border rounded"
@@ -39,6 +62,7 @@
             <span v-if="dateError" class="text-red-500 text-sm">{{
               dateError
             }}</span>
+
             <button
               type="submit"
               class="bg-blue-500 text-white px-4 py-2 rounded"
@@ -67,6 +91,7 @@
       <!-- Right Column: Task List -->
       <div class="w-3/5">
         <div class="bg-white p-4 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Task List</h2>
           <ul class="space-y-2">
             <li
               v-if="displayedTasks.length === 0"
@@ -206,10 +231,11 @@ export default defineComponent({
       if (this.newTaskDescription.trim() === "") {
         this.descriptionError = "Description is required.";
       }
-      if (
-        this.newTaskTargetDate &&
+      if (this.newTaskTargetDate.trim() === "") {
+        this.dateError = "Date is required.";
+      } else if (
         new Date(this.newTaskTargetDate).getTime() <
-          new Date().setHours(0, 0, 0, 0)
+        new Date().setHours(0, 0, 0, 0)
       ) {
         this.dateError = "Date cannot be in the past.";
       }
