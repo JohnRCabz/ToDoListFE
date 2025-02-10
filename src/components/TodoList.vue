@@ -100,8 +100,8 @@
               Congratulations! You're all cleared.
             </li>
             <li
-              v-for="(task, index) in displayedTasks"
-              :key="index"
+              v-for="task in displayedTasks"
+              :key="task.id"
               :class="{
                 'bg-red-100': isOverdue(task) && task.status !== 'Finished',
                 'bg-green-100': task.status === 'Finished',
@@ -123,20 +123,20 @@
                 <div class="flex space-x-2">
                   <button
                     v-if="task.status === 'Pending'"
-                    @click="setInProgress(index)"
+                    @click="setInProgress(task)"
                     class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition-colors duration-300"
                   >
                     In Progress
                   </button>
                   <button
                     v-if="task.status === 'In Progress'"
-                    @click="completeTask(index)"
+                    @click="completeTask(task)"
                     class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition-colors duration-300"
                   >
                     Complete
                   </button>
                   <button
-                    @click="confirmRemoveTask(index)"
+                    @click="confirmRemoveTask(task)"
                     class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition-colors duration-300"
                   >
                     <i class="fas fa-trash-alt"></i>
@@ -191,7 +191,11 @@ export default defineComponent({
   async created() {
     try {
       const response = await axiosInstance.get("/tasks");
-      this.tasks = response.data;
+      if (response.status === 200) {
+        this.tasks = response.data;
+      } else {
+        console.error("Error fetching tasks:", response.statusText);
+      }
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
@@ -249,44 +253,55 @@ export default defineComponent({
         };
         try {
           const response = await axiosInstance.post("/tasks", task);
-          this.tasks.push(response.data);
-          this.newTaskTitle = "";
-          this.newTaskDescription = "";
-          this.newTaskStatus = "Pending";
-          this.newTaskTargetDate = "";
+          if (response.status === 201) {
+            this.tasks.push(response.data);
+            this.newTaskTitle = "";
+            this.newTaskDescription = "";
+            this.newTaskStatus = "Pending";
+            this.newTaskTargetDate = "";
+          } else {
+            console.error("Error adding task:", response.statusText);
+          }
         } catch (error) {
           console.error("Error adding task:", error);
         }
       }
     },
-    async setInProgress(index: number) {
-      const task = this.tasks[index];
+    async setInProgress(task: Task) {
       task.status = "In Progress";
       try {
-        await axiosInstance.put(`/tasks/${task.id}`, task);
+        const response = await axiosInstance.put(`/tasks/${task.id}`, task);
+        if (response.status !== 200) {
+          console.error("Error updating task:", response.statusText);
+        }
       } catch (error) {
         console.error("Error updating task:", error);
       }
     },
-    async completeTask(index: number) {
-      const task = this.tasks[index];
+    async completeTask(task: Task) {
       task.status = "Finished";
       try {
-        await axiosInstance.put(`/tasks/${task.id}`, task);
+        const response = await axiosInstance.put(`/tasks/${task.id}`, task);
+        if (response.status !== 200) {
+          console.error("Error updating task:", response.statusText);
+        }
       } catch (error) {
         console.error("Error updating task:", error);
       }
     },
-    async confirmRemoveTask(index: number) {
+    async confirmRemoveTask(task: Task) {
       if (window.confirm("Are you sure you want to remove this task?")) {
-        this.removeTask(index);
+        this.removeTask(task);
       }
     },
-    async removeTask(index: number) {
-      const task = this.tasks[index];
+    async removeTask(task: Task) {
       try {
-        await axiosInstance.delete(`/tasks/${task.id}`);
-        this.tasks.splice(index, 1);
+        const response = await axiosInstance.delete(`/tasks/${task.id}`);
+        if (response.status === 200) {
+          this.tasks = this.tasks.filter((t) => t.id !== task.id);
+        } else {
+          console.error("Error removing task:", response.statusText);
+        }
       } catch (error) {
         console.error("Error removing task:", error);
       }

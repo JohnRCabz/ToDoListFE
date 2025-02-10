@@ -1,5 +1,7 @@
 # my-todo-app
+Please create a .env file and pleasce this below
 
+VUE_APP_BASE_URL=http://127.0.0.1:8000/api
 ## Project setup
 ```
 npm install
