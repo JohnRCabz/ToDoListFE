@@ -100,33 +100,28 @@ const editTaskMutation = useMutation({
           <Input v-model="formData.title" id="title" type="text" />
           <span v-for="error in v$.title.$errors" :key="error.$uid" class="text-red-500">{{
             error.$message
-          }}</span>
+            }}</span>
         </div>
 
         <div class="space-y-1">
           <Label for="description">Description</Label>
-          <Textarea
-            v-model="formData.description"
-            id="description"
-            placeholder="Type your message here."
-          />
+          <Textarea v-model="formData.description" id="description" placeholder="Type your message here." />
           <span v-for="error in v$.description.$errors" :key="error.$uid" class="text-red-500">{{
             error.$message
-          }}</span>
+            }}</span>
         </div>
 
         <div class="space-y-1">
           <Label for="status">Status</Label>
-          <Input v-model="formData.status" id="status" type="text" disabled />
+          <select v-model="formData.status" id="status" class="w-full border rounded-lg px-3 py-2">
+            <option value="Pending" disabled selected>Pending</option>
+            <option value="Completed">Completed</option>
+          </select>
         </div>
 
         <div class="space-y-1">
           <Label for="priority">Priority</Label>
-          <select
-            v-model="formData.priority"
-            id="priority"
-            class="w-full border rounded-lg px-3 py-2"
-          >
+          <select v-model="formData.priority" id="priority" class="w-full border rounded-lg px-3 py-2">
             <option value="" disabled>Select priority</option>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -134,7 +129,7 @@ const editTaskMutation = useMutation({
           </select>
           <span v-for="error in v$.priority.$errors" :key="error.$uid" class="text-red-500">{{
             error.$message
-          }}</span>
+            }}</span>
         </div>
 
         <div class="flex justify-end">
